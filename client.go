@@ -640,7 +640,6 @@ var clientCmd = &cobra.Command{
 			case <-ticker.C:
 				cliSettings, _ = cliGetSettings()
 				cliServers, _ = cliGetServers()
-				cliMaster, _ = cliGetMaster()
 				dlogs, _ := cliGetLogs()
 				cliTlog = termlog.NewTermLog(loglen)
 				cliAddTlog(dlogs)

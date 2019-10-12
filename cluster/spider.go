@@ -30,7 +30,7 @@ func (cluster *Cluster) SpiderShardsDiscovery() {
 					if extraUrl != "" {
 						for j, url := range strings.Split(extraUrl, ",") {
 							var err error
-							srv, err := cluster.newServerMonitor(url, cluster.dbUser, cluster.dbPass, "mdbsproxy.cnf")
+							srv, err := cluster.newServerMonitor(url, cluster.dbUser, cluster.dbPass, "mdbsproxy.cnf", make(map[string]string))
 							srv.State = stateShard
 							cluster.servers = append(cluster.servers, srv)
 							if err != nil {

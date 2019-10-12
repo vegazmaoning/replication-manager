@@ -29,6 +29,7 @@ type Config struct {
 	LogLevel                           int    `mapstructure:"log-level"`
 	User                               string `mapstructure:"db-servers-credential"`
 	Hosts                              string `mapstructure:"db-servers-hosts"`
+	SMNetworkPair                      string `mapstructure:"sm-network-pair"`
 	HostsTLSCA                         string `mapstructure:"db-servers-tls-ca-cert"`
 	HostsTLSKEY                        string `mapstructure:"db-servers-tls-client-key"`
 	HostsTLSCLI                        string `mapstructure:"db-servers-tls-client-cert"`

@@ -2,6 +2,7 @@ package proxysql
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
@@ -37,30 +38,35 @@ func (psql *ProxySQL) Connect() error {
 }
 
 func (psql *ProxySQL) AddServer(host string, port string) error {
+	log.Printf("insert mysql_servers %s:%s", host, port)
 	sql := fmt.Sprintf("INSERT INTO mysql_servers (hostname, port) VALUES('%s','%s')", host, port)
 	_, err := psql.Connection.Exec(sql)
 	return err
 }
 
 func (psql *ProxySQL) AddOfflineServer(host string, port string) error {
+	log.Printf("insert mysql_servers %s:%s to hostgroup 666", host, port)
 	sql := fmt.Sprintf("INSERT INTO mysql_servers (hostgroup_id, hostname, port) VALUES('666', '%s','%s')", host, port)
 	_, err := psql.Connection.Exec(sql)
 	return err
 }
 
 func (psql *ProxySQL) SetOffline(host string, port string) error {
+	log.Printf("update mysql_servers %s:%s to hostgroup 666", host, port)
 	sql := fmt.Sprintf("UPDATE mysql_servers SET hostgroup_id='666' WHERE hostname='%s' AND port='%s'", host, port)
 	_, err := psql.Connection.Exec(sql)
 	return err
 }
 
 func (psql *ProxySQL) SetOfflineSoft(host string, port string) error {
+	log.Printf("update mysql_servers %s:%s to status=OFFLINE_SOFT, hostgrout_id=%s", host, port, psql.ReaderHG)
 	sql := fmt.Sprintf("UPDATE mysql_servers SET status='OFFLINE_SOFT', hostgroup_id='%s' WHERE hostname='%s' AND port='%s'", psql.ReaderHG, host, port)
 	_, err := psql.Connection.Exec(sql)
 	return err
 }
 
 func (psql *ProxySQL) SetOnline(host string, port string) error {
+	log.Printf("update mysql_servers %s:%s to status=ONLINE", host, port)
 	sql := fmt.Sprintf("UPDATE mysql_servers SET status='ONLINE' WHERE hostname='%s' AND port='%s'", host, port)
 	_, err := psql.Connection.Exec(sql)
 	return err

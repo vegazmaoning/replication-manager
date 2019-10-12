@@ -291,6 +291,8 @@ func init() {
 		monitorCmd.Flags().StringVar(&conf.ProxysqlPassword, "proxysql-password", "admin", "ProxySQL admin password")
 		monitorCmd.Flags().BoolVar(&conf.ProxysqlCopyGrants, "proxysql-copy-grants", true, "Copy grants from master")
 		monitorCmd.Flags().BoolVar(&conf.ProxysqlBootstrap, "proxysql-bootstrap", false, "Bootstrap ProxySQL config from replication-manager config")
+		monitorCmd.Flags().StringVar(&conf.SMNetworkPair, "sm-network-pair", "", "manageIP:serviceIP")
+
 	}
 	if WithSphinx == "ON" {
 		monitorCmd.Flags().BoolVar(&conf.SphinxOn, "sphinx", false, "Turn on SphinxSearch detection")

@@ -1,0 +1,6 @@
+time="2019-09-30T17:32:54+08:00" level=error msg="open /usr/share/replication-manager/opensvc/account.yaml: no such file or directory"
+panic: interface conversion: interface {} is nil, not string
+
+goroutine 1 [running]:
+main.init.2()
+	/root/go/src/replication-manager/server.go:360 +0x6bf5

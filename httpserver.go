@@ -39,6 +39,7 @@ type HandlerManager struct {
 func httpserver() {
 
 	// before starting the http server, check that the dashboard is present
+	currentCluster.LogPrintf("ERROR", "httproot is %s", conf.HttpRoot)
 	if err := testFile("app.html"); err != nil {
 		currentCluster.LogPrintf("ERROR", "Dashboard app.html file missing - will not start http server %s", err)
 		return

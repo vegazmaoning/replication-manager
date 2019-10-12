@@ -30,6 +30,7 @@ import (
 type Cluster struct {
 	hostList                   []string
 	proxyList                  []string
+	smNetworkPair              map[string]string
 	clusterList                map[string]*Cluster
 	servers                    serverList
 	slaves                     serverList
@@ -118,7 +119,22 @@ func (cluster *Cluster) Init(conf config.Config, cfgGroup string, tlog *termlog.
 	cluster.runStatus = "A"
 	cluster.benchmarkType = "sysbench"
 	cluster.sme.Init()
-
+	cluster.smNetworkPair = make(map[string]string)
+	if cluster.conf.SMNetworkPair != "" {
+		cluster.LogPrintf(LvlInfo, "in netpair is nil")
+		smNetworkPairList := strings.Split(cluster.conf.SMNetworkPair, ",")
+		for _, pair := range smNetworkPairList {
+			manageServiceNetwork := strings.Split(pair, ":")
+			cluster.smNetworkPair[manageServiceNetwork[0]] = manageServiceNetwork[1]
+		}
+	} else {
+		for _, pair := range strings.Split(cluster.conf.Hosts, ",") {
+			manageServiceNetwork := strings.Split(pair, ":")
+			cluster.smNetworkPair[manageServiceNetwork[0]] = manageServiceNetwork[0]
+		}
+	}
+	cluster.LogPrintf(LvlInfo, "hostlist is %s", cluster.hostList)
+	cluster.LogPrintf(LvlInfo, "smnetword is %s", cluster.smNetworkPair)
 	cluster.LogPrintf(LvlInfo, "Loading database TLS certificates")
 	err := cluster.loadDBCertificate()
 	if err != nil {
@@ -268,6 +284,7 @@ func (cluster *Cluster) ReloadFromSave() error {
 }
 
 func (cluster *Cluster) InitAgent(conf config.Config) {
+	cluster.LogPrintf(LvlInfo, "in cluster.go initAgent")
 	cluster.conf = conf
 	cluster.agentFlagCheck()
 	if conf.LogFile != "" {

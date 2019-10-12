@@ -137,7 +137,7 @@ func initConfig() {
 	if conf.ConfigFile != "" {
 		viper.SetConfigFile(conf.ConfigFile)
 		if _, err := os.Stat(conf.ConfigFile); os.IsNotExist(err) {
-			log.Fatal("No config file " + conf.ConfigFile)
+			log.Fatal("No config file is exists" + conf.ConfigFile)
 		}
 	} else {
 		viper.SetConfigName("config")

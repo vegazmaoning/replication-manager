@@ -31,17 +31,18 @@ import (
 
 // ServerMonitor defines a server to monitor.
 type ServerMonitor struct {
-	Id       string //Unique name given by cluster & crc64(URL) used by test to provision
-	Conn     *sqlx.DB
-	User     string
-	Pass     string `json:"-"`
-	URL      string
-	DSN      string `json:"-"`
-	Host     string
-	Port     string
-	IP       string
-	Strict   string
-	ServerID uint
+	Id            string //Unique name given by cluster & crc64(URL) used by test to provision
+	Conn          *sqlx.DB
+	User          string
+	Pass          string `json:"-"`
+	URL           string
+	DSN           string `json:"-"`
+	Host          string
+	SMNetworkPair map[string]string
+	Port          string
+	IP            string
+	Strict        string
+	ServerID      uint
 
 	LogBin                      string
 	GTIDBinlogPos               *gtid.List
@@ -137,7 +138,7 @@ const (
 )
 
 /* Initializes a server object */
-func (cluster *Cluster) newServerMonitor(url string, user string, pass string, conf string) (*ServerMonitor, error) {
+func (cluster *Cluster) newServerMonitor(url string, user string, pass string, conf string, smNetworkPair map[string]string) (*ServerMonitor, error) {
 
 	server := new(ServerMonitor)
 	server.TestConfig = conf
@@ -160,6 +161,7 @@ func (cluster *Cluster) newServerMonitor(url string, user string, pass string, c
 	server.State = stateSuspect
 	server.PrevState = stateSuspect
 	server.Host, server.Port = misc.SplitHostPort(url)
+	server.SMNetworkPair = smNetworkPair
 
 	crcTable := crc64.MakeTable(crc64.ECMA)
 	server.Id = strconv.FormatUint(crc64.Checksum([]byte(server.URL), crcTable), 10)
@@ -168,7 +170,6 @@ func (cluster *Cluster) newServerMonitor(url string, user string, pass string, c
 	server.setDSN()
 	var err error
 	server.Conn, err = sqlx.Open("mysql", server.DSN)
-
 	return server, err
 }
 
@@ -292,7 +293,6 @@ func (server *ServerMonitor) Ping(wg *sync.WaitGroup) {
 	}
 	// from here we have connection
 	server.Refresh()
-
 	// Reset FailCount
 	if (server.State != stateFailed && server.State != stateUnconn && server.State != stateSuspect) && (server.FailCount > 0) /*&& (((server.ClusterGroup.sme.GetHeartbeats() - server.FailSuspectHeartbeat) * server.ClusterGroup.conf.MonitoringTicker) > server.ClusterGroup.conf.FailResetTime)*/ {
 		server.FailCount = 0
@@ -361,7 +361,6 @@ func (server *ServerMonitor) Ping(wg *sync.WaitGroup) {
 
 // Refresh a server object
 func (server *ServerMonitor) Refresh() error {
-
 	if server.Conn.Unsafe() == nil {
 		//	server.State = stateFailed
 		return errors.New("Connection is closed, server unreachable")
